@@ -1,0 +1,8 @@
+# binaries
+cp_*
+
+# large test files
+file_*
+
+# files containing measurements
+result-*
