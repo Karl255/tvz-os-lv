@@ -1,0 +1,14 @@
+.Module.symvers.cmd
+.modules.order.cmd
+.sviprocesi.ko.cmd
+.sviprocesi.mod.cmd
+.sviprocesi.mod.o.cmd
+.sviprocesi.o.cmd
+
+Module.symvers
+modules.order
+sviprocesi.ko
+sviprocesi.mod
+sviprocesi.mod.c
+sviprocesi.mod.o
+sviprocesi.o
