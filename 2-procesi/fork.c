@@ -26,16 +26,25 @@ int main(int argc, char** argv) {
 		exit(3);
 	}
 	
+	int errors = 0;
+	
 	for (i = 1; i <= n; i++) {
-		int pid = fork();
-		
-		if (pid == 0) {
-			printf("Dijete #%ld\n", i);
-			break;
-		} else {
-			printf("Roditelj #%ld\n", i);
+		switch (fork()) {
+			case -1:
+				errors++;
+				break;
+			
+			case 0:
+				printf("Dijete #%ld\n", i);
+				exit(0);
+			
+			default:
+				printf("Roditelj #%ld\n", i);
+				break;
 		}
 	}
+	
+	fprintf(stderr, "Errors: %d\n", errors);
 	
 	return 0;
 }
