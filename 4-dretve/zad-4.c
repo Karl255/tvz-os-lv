@@ -1,49 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 
-long sum = 0;
+#include <pthread.h>
+#include <time.h>
+#include <unistd.h>
+
+int mjesta[10][10];
 
 void* korisnik(void* wait_time) {
-	sum++;
+	sleep((rand() % 5) + 1); // 1-5 s
+	
+	while (1) {
+		int mjesto_x = rand() % 10;
+		int mjesto_y = rand() % 10;
+		
+		if (mjesta[mjesto_y][mjesto_x] == 0) {
+			if (rand() & 1) { // 50%
+				sleep((rand() % 2) + 1); // 1-2 s
+				mjesta[mjesto_y][mjesto_x]++;
+				break;
+			}
+		}
+	}
+	
 	return 0;
 }
 
 int main(int argc, char** argv) {
-	if (argc < 2) {
-		puts("Not enough arguments");
-		exit(1);
-	}
-
-	char* end = NULL;
-	long i, n = strtol(argv[1], &end, 10);
-
-	if (end - argv[1] != strlen(argv[1])) {
-		puts("Given argument is not a valid number");
-		exit(2);
-	}
-
-	if (n < 1) {
-		printf("Argument can't be less than 1\n");
-		exit(3);
-	}
+	long i, j;
+	pthread_t korisnici[100];
 	
-	long created = 0;
+	srand(time(NULL));
 	
-	for (i = 1; i <= n; i++) {
-		pthread_t thread;
-		int status = pthread_create(&thread, NULL, korisnik, NULL);
+	for (i = 0; i < 100; i++) {
+		int status = pthread_create(&korisnici[i], NULL, korisnik, NULL);
 		
 		if (status != 0) {
 			fprintf(stderr, "Couldn't create new thread (%ld). Exiting.\n", i);
-			break;
+			exit(1);
 		}
-		
-		created++;
 	}
 	
-	printf("%ld %ld\n", created, sum);
+	for (i = 0; i < 100; i++) {
+		pthread_join(korisnici[i], NULL);
+	}
+	
+	for (i = 0; i < 10; i++) {
+		for (j = 0; j < 10; j++) {
+			printf("%d ", mjesta[i][j]);
+		}
+		
+		puts("\n");
+	}
 	
 	return 0;
 }
