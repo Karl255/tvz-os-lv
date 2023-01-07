@@ -8,6 +8,10 @@
 
 #define N 100
 int mjesta[N];
+pthread_mutex_t mutexes[N];
+
+void mutexes_init();
+void mutexes_destroy();
 
 void* korisnik(void* _) {
 	sleep((rand() % 5) + 1); // 1-5 s
@@ -15,13 +19,19 @@ void* korisnik(void* _) {
 	while (1) {
 		int mjesto_i = rand() % N;
 		
+		pthread_mutex_lock(&mutexes[mjesto_i]);
+		
 		if (mjesta[mjesto_i] == 0) {
 			if (rand() & 1) { // 50%
 				sleep((rand() % 2) + 1); // 1-2 s
 				mjesta[mjesto_i]++;
+				
+				pthread_mutex_unlock(&mutexes[mjesto_i]);
 				break;
 			}
 		}
+		
+		pthread_mutex_unlock(&mutexes[mjesto_i]);
 	}
 	
 	return 0;
@@ -31,6 +41,7 @@ int main(int argc, char** argv) {
 	int i, odmah;
 	pthread_t korisnici[N];
 	
+	mutexes_init();
 	srand(time(NULL));
 	
 	odmah = rand() % N;
@@ -73,6 +84,23 @@ int main(int argc, char** argv) {
 	}
 	
 	printf("praznih = %d\n", praznih);
+	mutexes_destroy();
 	
 	return 0;
+}
+
+void mutexes_init() {
+	int i = 0;
+	
+	for (i = 0; i < N; i++) {
+		pthread_mutex_init(&mutexes[i], NULL);
+	}
+}
+
+void mutexes_destroy() {
+	int i = 0;
+	
+	for (i = 0; i < N; i++) {
+		pthread_mutex_destroy(&mutexes[i]);
+	}
 }
