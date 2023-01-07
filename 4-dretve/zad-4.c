@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 	
 	srand(time(NULL));
 	
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 50; i++) {
 		int status = pthread_create(&korisnici[i], NULL, korisnik, NULL);
 		
 		if (status != 0) {
@@ -42,21 +42,37 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 50; i++) {
+		pthread_join(korisnici[i], NULL);
+	}
+	
+	for (i = 50; i < 100; i++) {
+		int status = pthread_create(&korisnici[i], NULL, korisnik, NULL);
+		
+		if (status != 0) {
+			fprintf(stderr, "Couldn't create new thread (%ld). Exiting.\n", i);
+			exit(1);
+		}
+		
 		pthread_join(korisnici[i], NULL);
 	}
 	
 	int sum = 0;
+	int praznih = 0;
 	for (i = 0; i < 10; i++) {
 		for (j = 0; j < 10; j++) {
 			printf("%d ", mjesta[i][j]);
 			sum += mjesta[i][j];
+			if (mjesta[i][j] == 0) {
+				praznih++;
+			}
 		}
 		
 		puts("");
 	}
 	
-	printf("sum = %d\n", sum);
+	printf("zbroj = %d\n", sum);
+	printf("praznih = %d\n", praznih);
 	
 	return 0;
 }
